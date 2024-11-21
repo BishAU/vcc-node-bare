@@ -14,16 +14,33 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
-  name          String?
+  name          String
+  phone         String?
+  
+  // Company Information
+  companyName   String?
+  abn          String?
+  
+  // Address Information
+  address1     String
+  address2     String?
+  city         String
+  state        String
+  postcode     String
+  country      String
+  
+  // Optional shipping address
+  shippingAddress1 String?
+  shippingAddress2 String?
+  shippingCity     String?
+  shippingState    String?
+  shippingPostcode String?
+  shippingCountry  String?
+  
   password      String    // Hashed password
   role          UserRole  @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
-  // Profile information
-  phone         String?
-  address       String?
-  company       String?
   
   // Relations
   orders        Order[]
@@ -40,13 +57,18 @@ enum UserRole {
 // Product model for both one-time purchases and subscription plans
 model Product {
   id          String   @id @default(cuid())
+  sku         String   @unique
   name        String
   description String?
-  price       Float
+  unitPrice   Float
   type        ProductType
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  // Tax settings
+  taxRate     Float    @default(0.1) // Default 10% GST
+  taxInclusive Boolean @default(true)
   
   // Stripe specific fields
   stripeProductId    String?  @unique
@@ -73,17 +95,28 @@ model Order {
   id          String    @id @default(cuid())
   userId      String
   status      OrderStatus
+  
+  // Transaction Details
+  subtotal    Float
+  taxAmount   Float
   total       Float
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus
+  notes       String?
   
   // Stripe specific fields
   stripePaymentIntentId String?  @unique
+  stripeMetadata Json?
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   
   // Relations
   user        User       @relation(fields: [userId], references: [id])
   items       OrderItem[]
   invoice     Invoice?
+  transaction Transaction?
   
   @@map("orders")
 }
@@ -92,8 +125,11 @@ model OrderItem {
   id        String   @id @default(cuid())
   orderId   String
   productId String
+  sku       String
   quantity  Int
-  price     Float
+  unitPrice Float
+  taxAmount Float
+  total     Float
   
   // Relations
   order     Order    @relation(fields: [orderId], references: [id])
@@ -102,11 +138,70 @@ model OrderItem {
   @@map("order_items")
 }
 
-enum OrderStatus {
+// Transaction model to store detailed transaction information
+model Transaction {
+  id            String    @id @default(cuid())
+  orderId       String    @unique
+  
+  // Customer Information at time of transaction
+  customerName  String
+  customerEmail String
+  customerPhone String
+  companyName   String?
+  abn          String?
+  
+  // Billing Address at time of transaction
+  billingAddress1  String
+  billingAddress2  String?
+  billingCity      String
+  billingState     String
+  billingPostcode  String
+  billingCountry   String
+  
+  // Shipping Address at time of transaction
+  shippingAddress1 String?
+  shippingAddress2 String?
+  shippingCity     String?
+  shippingState    String?
+  shippingPostcode String?
+  shippingCountry  String?
+  
+  // Payment Information
+  paymentMethod    PaymentMethod
+  paymentStatus    PaymentStatus
+  stripeMetadata   Json?
+  
+  // Subscription Information (if applicable)
+  subscriptionType SubscriptionType?
+  
+  // Timestamps and Notes
+  timestamp     DateTime  @default(now())
+  notes         String?
+  
+  // Relations
+  order         Order     @relation(fields: [orderId], references: [id])
+  
+  @@map("transactions")
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  PAYPAL
+  BANK_TRANSFER
+  OTHER
+}
+
+enum PaymentStatus {
   PENDING
-  PAID
+  COMPLETED
   FAILED
+  REFUNDED
   CANCELLED
+}
+
+enum SubscriptionType {
+  MONTHLY
+  ANNUAL
 }
 
 // Subscription model for recurring payments
@@ -115,6 +210,7 @@ model Subscription {
   userId          String
   planId          String
   status          SubscriptionStatus
+  subscriptionType SubscriptionType
   currentPeriodStart DateTime
   currentPeriodEnd   DateTime
   createdAt       DateTime  @default(now())
@@ -122,6 +218,7 @@ model Subscription {
   
   // Stripe specific fields
   stripeSubscriptionId String?  @unique
+  stripeMetadata      Json?
   
   // Relations
   user            User     @relation(fields: [userId], references: [id])
@@ -135,8 +232,9 @@ model SubscriptionPlan {
   id          String   @id @default(cuid())
   productId   String
   name        String
-  interval    BillingInterval
-  price       Float
+  interval    SubscriptionType
+  unitPrice   Float
+  taxAmount   Float
   
   // Relations
   product     Product  @relation(fields: [productId], references: [id])
@@ -152,16 +250,13 @@ enum SubscriptionStatus {
   UNPAID
 }
 
-enum BillingInterval {
-  MONTHLY
-  YEARLY
-}
-
 // Invoice model for both orders and subscriptions
 model Invoice {
   id          String    @id @default(cuid())
   number      String    @unique
-  amount      Float
+  subtotal    Float
+  taxAmount   Float
+  total       Float
   status      InvoiceStatus
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
