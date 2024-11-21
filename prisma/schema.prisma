@@ -1,0 +1,209 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profile management
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String    // Hashed password
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Profile information
+  phone         String?
+  address       String?
+  company       String?
+  
+  // Relations
+  orders        Order[]
+  subscriptions Subscription[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// Product model for both one-time purchases and subscription plans
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  type        ProductType
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Stripe specific fields
+  stripeProductId    String?  @unique
+  stripePriceId      String?  @unique
+  
+  // Relations
+  orderItems   OrderItem[]
+  subscriptionPlans SubscriptionPlan[]
+  
+  // GL Code mapping
+  glCodeId     String
+  glCode       GLCode    @relation(fields: [glCodeId], references: [id])
+  
+  @@map("products")
+}
+
+enum ProductType {
+  ONE_TIME
+  SUBSCRIPTION
+}
+
+// Order model for one-time purchases
+model Order {
+  id          String    @id @default(cuid())
+  userId      String
+  status      OrderStatus
+  total       Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Stripe specific fields
+  stripePaymentIntentId String?  @unique
+  
+  // Relations
+  user        User       @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+  invoice     Invoice?
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  
+  // Relations
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+// Subscription model for recurring payments
+model Subscription {
+  id              String    @id @default(cuid())
+  userId          String
+  planId          String
+  status          SubscriptionStatus
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Stripe specific fields
+  stripeSubscriptionId String?  @unique
+  
+  // Relations
+  user            User     @relation(fields: [userId], references: [id])
+  plan            SubscriptionPlan @relation(fields: [planId], references: [id])
+  invoices        Invoice[]
+  
+  @@map("subscriptions")
+}
+
+model SubscriptionPlan {
+  id          String   @id @default(cuid())
+  productId   String
+  name        String
+  interval    BillingInterval
+  price       Float
+  
+  // Relations
+  product     Product  @relation(fields: [productId], references: [id])
+  subscriptions Subscription[]
+  
+  @@map("subscription_plans")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  UNPAID
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+// Invoice model for both orders and subscriptions
+model Invoice {
+  id          String    @id @default(cuid())
+  number      String    @unique
+  amount      Float
+  status      InvoiceStatus
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Optional relations (an invoice can be for either an order or subscription)
+  orderId     String?   @unique
+  order       Order?    @relation(fields: [orderId], references: [id])
+  subscriptionId String?
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+  
+  // Xero specific fields
+  xeroInvoiceId String?  @unique
+  
+  // GL Code mapping
+  glCodeId    String
+  glCode      GLCode    @relation(fields: [glCodeId], references: [id])
+  
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  VOID
+  OVERDUE
+}
+
+// GL Code model for accounting
+model GLCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  name        String
+  description String?
+  active      Boolean   @default(true)
+  
+  // Xero specific fields
+  xeroAccountId String?  @unique
+  
+  // Relations
+  products    Product[]
+  invoices    Invoice[]
+  
+  @@map("gl_codes")
+}
