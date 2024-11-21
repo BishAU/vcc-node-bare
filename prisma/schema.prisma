@@ -204,6 +204,15 @@ enum SubscriptionType {
   ANNUAL
 }
 
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
 // Subscription model for recurring payments
 model Subscription {
   id              String    @id @default(cuid())

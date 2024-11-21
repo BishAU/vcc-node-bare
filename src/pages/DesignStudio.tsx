@@ -4,7 +4,7 @@ import { DesignForm } from '../components/design/DesignForm';
 import { DesignPreview } from '../components/design/DesignPreview';
 import { useDesignStore } from '../store/designStore';
 
-export const DesignStudio: React.FC = () => {
+const DesignStudio: React.FC = () => {
     const activeProject = useDesignStore(state => state.activeProject);
     const getProjectStatus = useDesignStore(state => state.getProjectStatus);
 
@@ -67,3 +67,6 @@ export const DesignStudio: React.FC = () => {
         </motion.div>
     );
 };
+
+export { DesignStudio };
+export default DesignStudio;

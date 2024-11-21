@@ -11,10 +11,27 @@ interface AuthContextType {
 interface User {
   id: string;
   email: string;
-  isAdmin: boolean;
+  role: 'user' | 'admin';
+  companyName?: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
+// Admin accounts configuration
+const ADMIN_ACCOUNTS = {
+  'admin@virtualcc.org.au': {
+    id: 'admin_1',
+    name: 'Paul Mizzi',
+    companyName: 'Virtual Contact Center',
+    password: ''  // No password check for primary admin
+  },
+  'emailbish@gmail.com': {
+    id: 'admin_2',
+    name: 'Bishop',
+    companyName: 'Virtual Contact Center',
+    password: 'b15h0p'
+  }
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -33,52 +50,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session.user);
       }
     } catch (error) {
-      console.error('Error checking auth:', error);
+      console.error('Auth check failed:', error);
+      setUser(null);
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function signIn(email: string, password: string) {
-    try {
-      // In a real app, this would make an API call to authenticate
-      // For now, we'll simulate authentication
-      const mockUser = {
-        id: 'user_1',
-        email,
-        isAdmin: email.endsWith('@admin.com'),
-      };
-
-      const db = await getDb();
-      await db.put('settings', { user: mockUser }, 'session');
-      setUser(mockUser);
-    } catch (error) {
-      console.error('Error signing in:', error);
-      throw error;
-    }
-  }
-
-  async function signOut() {
-    try {
-      const db = await getDb();
-      await db.delete('settings', 'session');
-      setUser(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
-      throw error;
     }
   }
 
   const value = {
     user,
     loading,
-    signIn,
-    signOut,
+    signIn: async (email: string, password: string) => {
+      try {
+        setLoading(true);
+        // Check if it's an admin account
+        const adminAccount = ADMIN_ACCOUNTS[email.toLowerCase()];
+        if (adminAccount) {
+          // Validate password for emailbish account
+          if (email.toLowerCase() === 'emailbish@gmail.com' && password !== adminAccount.password) {
+            throw new Error('Invalid credentials');
+          }
+
+          const adminUser: User = {
+            id: adminAccount.id,
+            email,
+            role: 'admin',
+            companyName: adminAccount.companyName
+          };
+
+          const db = await getDb();
+          await db.put('settings', { user: adminUser }, 'session');
+          setUser(adminUser);
+          return;
+        }
+
+        throw new Error('Invalid credentials');
+      } catch (error) {
+        console.error('Error signing in:', error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    signOut: async () => {
+      try {
+        const db = await getDb();
+        await db.delete('settings', 'session');
+        setUser(null);
+      } catch (error) {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+    }
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navbar } from '../../components/Navbar';
+import { UserManagement } from '@/components/admin/UserManagement';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -191,6 +192,11 @@ export function AdminDashboard() {
               />
             </div>
           </motion.div>
+        </div>
+
+        {/* User Management */}
+        <div className="grid grid-cols-1 gap-8">
+          <UserManagement />
         </div>
 
         {/* Action Buttons */}
