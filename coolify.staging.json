@@ -1,0 +1,44 @@
+{
+  "name": "vcc-abs-staging",
+  "type": "docker",
+  "dockerfile": "./Dockerfile",
+  "port": 5173,
+  "env": {
+    "NODE_ENV": "staging",
+    "VITE_API_BASE_URL": "https://staging-api.vccabs.com.au/api",
+    "DATABASE_URL": "${DATABASE_URL}",
+    "DIRECT_URL": "${DIRECT_URL}",
+    "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}",
+    "XERO_CLIENT_ID": "${XERO_CLIENT_ID}",
+    "XERO_CLIENT_SECRET": "${XERO_CLIENT_SECRET}",
+    "ABS_API_KEY": "${ABS_API_KEY}",
+    "JWT_SECRET": "${JWT_SECRET}",
+    "COOKIE_SECRET": "${COOKIE_SECRET}",
+    "SENTRY_DSN": "${SENTRY_DSN}"
+  },
+  "healthCheck": {
+    "path": "/api/health",
+    "port": 3000
+  },
+  "volumes": [
+    {
+      "source": "./logs",
+      "target": "/app/logs"
+    }
+  ],
+  "resources": {
+    "cpu": 0.5,
+    "memory": 1024
+  },
+  "scaling": {
+    "min": 1,
+    "max": 2
+  },
+  "domains": [
+    "staging.vccabs.com.au"
+  ],
+  "tags": [
+    "staging",
+    "vcc-abs"
+  ]
+}
