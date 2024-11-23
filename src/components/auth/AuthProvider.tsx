@@ -4,7 +4,7 @@ import { getDb } from '../../lib/db';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -43,6 +43,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function checkAuth() {
     try {
+      // First check localStorage for a persistent session
+      const persistentSession = localStorage.getItem('persistentSession');
+      if (persistentSession) {
+        const { user: storedUser, expiresAt } = JSON.parse(persistentSession);
+        if (new Date().getTime() < expiresAt) {
+          setUser(storedUser);
+          return;
+        } else {
+          // Clear expired persistent session
+          localStorage.removeItem('persistentSession');
+        }
+      }
+
+      // Fall back to IndexedDB session
       const db = await getDb();
       const session = await db.get('settings', 'session');
       
@@ -60,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
-    signIn: async (email: string, password: string) => {
+    signIn: async (email: string, password: string, rememberMe = false) => {
       try {
         setLoading(true);
         // Check if it's an admin account
@@ -78,8 +92,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             companyName: adminAccount.companyName
           };
 
-          const db = await getDb();
-          await db.put('settings', { user: adminUser }, 'session');
+          if (rememberMe) {
+            // Store in localStorage with 30-day expiration for "Remember Me"
+            const expiresAt = new Date().getTime() + (30 * 24 * 60 * 60 * 1000); // 30 days
+            localStorage.setItem('persistentSession', JSON.stringify({
+              user: adminUser,
+              expiresAt
+            }));
+          } else {
+            // Store in IndexedDB for regular session
+            const db = await getDb();
+            await db.put('settings', { user: adminUser }, 'session');
+          }
+
           setUser(adminUser);
           return;
         }
@@ -94,6 +119,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     signOut: async () => {
       try {
+        // Clear both storage mechanisms
+        localStorage.removeItem('persistentSession');
         const db = await getDb();
         await db.delete('settings', 'session');
         setUser(null);

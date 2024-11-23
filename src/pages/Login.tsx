@@ -1,126 +1,155 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useAuth } from '../components/auth/AuthProvider';
-import { useAuthStore } from '../store/authStore';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PageWrapper } from '../components/layout/PageWrapper';
+import { sharedStyles, combineClasses } from '../styles/shared';
+import { FiMail, FiLock } from 'react-icons/fi';
+import { useAuth } from '../contexts/AuthContext';
 
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const Login = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
-  const setToken = useAuthStore((state) => state.setToken);
+  const { login } = useAuth();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
     try {
-      await signIn(email, password);
-      setToken('mock-jwt-token');
+      setError('');
+      setLoading(true);
+      await login(formData.email, formData.password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      setError('Failed to sign in');
+      console.error('Login error:', err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full space-y-8"
-      >
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Virtual Contact Center Dashboard
-          </p>
+    <PageWrapper>
+      <div className={sharedStyles.pageContainer}>
+        <div className="max-w-md mx-auto">
+          <h1 className={sharedStyles.heading}>Welcome Back</h1>
+
+          <div className={sharedStyles.card}>
+            {error && (
+              <div className="mb-4 p-3 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email Input */}
+              <div className={sharedStyles.form.group}>
+                <label htmlFor="email" className={sharedStyles.form.label}>
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiMail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={combineClasses(sharedStyles.form.input, 'pl-10')}
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className={sharedStyles.form.group}>
+                <label htmlFor="password" className={sharedStyles.form.label}>
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiLock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={combineClasses(sharedStyles.form.input, 'pl-10')}
+                    placeholder="Enter your password"
+                  />
+                </div>
+              </div>
+
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="rememberMe"
+                    name="rememberMe"
+                    type="checkbox"
+                    checked={formData.rememberMe}
+                    onChange={handleChange}
+                    className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-purple-500 focus:ring-purple-500"
+                  />
+                  <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-300">
+                    Remember me
+                  </label>
+                </div>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm font-medium text-purple-400 hover:text-purple-300"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className={combineClasses(
+                  sharedStyles.button.base,
+                  sharedStyles.button.primary,
+                  'w-full',
+                  loading && 'opacity-50 cursor-not-allowed'
+                )}
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+
+              {/* Register Link */}
+              <div className="text-center text-sm text-gray-300">
+                Don't have an account?{' '}
+                <Link
+                  to="/register"
+                  className="font-medium text-purple-400 hover:text-purple-300"
+                >
+                  Sign up
+                </Link>
+              </div>
+            </form>
+          </div>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          {error && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-red-600 text-sm text-center bg-red-50 p-2 rounded"
-            >
-              {error}
-            </motion.div>
-          )}
-
-          <div>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={isLoading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
-            >
-              {isLoading ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Signing in...
-                </span>
-              ) : (
-                'Sign in'
-              )}
-            </motion.button>
-          </div>
-        </form>
-      </motion.div>
-    </div>
+      </div>
+    </PageWrapper>
   );
-}
+};
 
-export { Login };
 export default Login;
