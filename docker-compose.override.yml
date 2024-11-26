@@ -1,0 +1,13 @@
+version: '3.8'
+
+networks:
+  coolify:
+    external: true
+
+services:
+  app:
+    networks:
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=coolify"
