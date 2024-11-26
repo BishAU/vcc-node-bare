@@ -5,6 +5,18 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/',
+  server: {
+    port: 3000,
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  },
   optimizeDeps: {
     include: [
       'react-router-dom',
@@ -28,6 +40,7 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
     chunkSizeWarningLimit: 500,
+    manifest: true,
     rollupOptions: {
       external: [],
       input: {
@@ -88,15 +101,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     },
     dedupe: ['react', 'react-dom', 'react-router-dom']
-  },
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false
-      }
-    }
   }
 });
