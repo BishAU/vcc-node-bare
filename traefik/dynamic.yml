@@ -41,7 +41,7 @@ http:
     vcc-service:
       loadBalancer:
         servers:
-          - url: "http://localhost:3000"
+          - url: "http://vcc-abs-staging:3000"
         passHostHeader: true
         healthCheck:
           path: /api/health
