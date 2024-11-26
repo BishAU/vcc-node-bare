@@ -3,6 +3,7 @@
   "type": "docker",
   "dockerfile": "./Dockerfile",
   "port": 3000,
+  "branch": "security-fixes",
   "env": {
     "NODE_ENV": "staging",
     "VITE_API_BASE_URL": "https://vcc.myinvoices.today/api",
