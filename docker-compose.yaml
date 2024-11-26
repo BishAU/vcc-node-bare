@@ -18,10 +18,20 @@ services:
       - SENTRY_DSN=${SENTRY_DSN}
     ports:
       - "3000:3000"
+      - "5173:5173"
+      - "8080:8080"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.gzip.compress=true"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.entryPoints=http"
+      - "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.middlewares=gzip"
+      - "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.rule=Host(`vcc.myinvoices.today`) && PathPrefix(`/`)"
+      - "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.service=http-0-dogok4o8oo484440cogcckgk"
     restart: unless-stopped
