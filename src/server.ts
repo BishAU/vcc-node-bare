@@ -67,6 +67,7 @@ app.use(express.static(path.join(__dirname, '../../dist'), {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
   }
 }));
 
@@ -88,13 +89,23 @@ app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     return next();
   }
-  res.sendFile(path.join(__dirname, '../../dist/index.html'), {
+  
+  const indexPath = path.join(__dirname, '../../dist/index.html');
+  console.log('Serving index.html from:', indexPath);
+  console.log('Requested path:', req.path);
+  
+  res.sendFile(indexPath, {
     maxAge: '0',
     etag: true,
     headers: {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '1; mode=block'
+    }
+  }, (err) => {
+    if (err) {
+      console.error('Error serving index.html:', err);
+      next(err);
     }
   });
 });
