@@ -30,7 +30,7 @@
     "traefik.enable=true",
     "traefik.http.middlewares.gzip.compress=true",
     "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
-    "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.entryPoints=http",
+    "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.entryPoints=http,https",
     "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.middlewares=gzip",
     "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.rule=Host(`vcc.myinvoices.today`) && PathPrefix(`/`)",
     "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.service=http-0-xwkosogo0sgo4c0cssoowo0o",
