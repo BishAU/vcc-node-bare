@@ -62,6 +62,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../../dist'), {
   maxAge: '1y',
   etag: true,
+  index: 'index.html',
   setHeaders: (res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
@@ -82,7 +83,11 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-app.get('*', (req, res) => {
+app.get('*', (req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
   res.sendFile(path.join(__dirname, '../../dist/index.html'), {
     maxAge: '0',
     etag: true,
