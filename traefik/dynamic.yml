@@ -1,0 +1,67 @@
+http:
+  middlewares:
+    security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        sslRedirect: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "DENY"
+        customResponseHeaders:
+          X-Robots-Tag: "none"
+          Server: ""
+
+    compress:
+      compress: {}
+
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  routers:
+    vcc-router:
+      rule: "Host(`vcc.myinvoices.today`)"
+      service: vcc-service
+      entryPoints:
+        - web
+        - websecure
+      middlewares:
+        - security-headers
+        - compress
+        - https-redirect
+      tls:
+        certResolver: letsencrypt
+        options: modern
+
+  services:
+    vcc-service:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:3000"
+        passHostHeader: true
+        healthCheck:
+          path: /api/health
+          interval: "30s"
+          timeout: "5s"
+          port: 3000
+
+tls:
+  options:
+    modern:
+      minVersion: VersionTLS12
+      sniStrict: true
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+
+  certificates:
+    - certFile: /certs/vcc.myinvoices.today.crt
+      keyFile: /certs/vcc.myinvoices.today.key

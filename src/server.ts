@@ -28,7 +28,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 
-const port = process.env.PORT || 3000;
+// Parse port from environment variable or use default
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://0.0.0.0:${port}`);
   console.log('Static files served from:', path.join(__dirname, '../../dist'));
