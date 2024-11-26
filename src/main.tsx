@@ -22,7 +22,7 @@ const root = createRoot(container);
 
 root.render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <App />
