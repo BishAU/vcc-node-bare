@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Volunteer Community Collaboration Australian Bureau of Statistics Platform",
   "scripts": {
-    "start": "ts-node src/server.ts",
+    "start": "node dist/server/server.js",
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "vite build",
+    "build": "npm run build:frontend && npm run build:server",
+    "build:frontend": "vite build",
+    "build:server": "tsc src/server.ts --outDir dist/server",
     "migrate:staging": "./scripts/db-migrate.sh staging up",
     "migrate:production": "./scripts/db-migrate.sh production up",
     "backup:staging": "./scripts/db-backup.sh staging",

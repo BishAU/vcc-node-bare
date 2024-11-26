@@ -7,8 +7,9 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and TypeScript configs
 COPY package*.json ./
+COPY tsconfig*.json ./
 COPY prisma ./prisma/
 
 # Install dependencies including dev dependencies for build
@@ -20,8 +21,11 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
-# Build application
-RUN npm run build
+# Build frontend
+RUN npm run build:frontend
+
+# Compile TypeScript server
+RUN npx tsc -p tsconfig.server.json
 
 # Production stage
 FROM node:20-alpine AS runner
@@ -34,7 +38,6 @@ WORKDIR /app
 
 # Copy built assets and necessary files
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/src/server.ts ./src/server.ts
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules ./node_modules
@@ -58,4 +61,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Start the application
-CMD ["npm", "run", "start"]
+CMD ["node", "dist/server/server.js"]
