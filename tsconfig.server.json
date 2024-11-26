@@ -3,7 +3,7 @@
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -13,7 +13,13 @@
     "isolatedModules": true,
     "outDir": "dist/server",
     "rootDir": "src",
-    "types": ["node"]
+    "types": ["node"],
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifier": true
   },
   "include": ["src/server.ts"],
   "exclude": ["node_modules"]

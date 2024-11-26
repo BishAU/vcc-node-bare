@@ -25,7 +25,7 @@ RUN npx prisma generate
 RUN npm run build:frontend
 
 # Compile TypeScript server
-RUN npx tsc -p tsconfig.server.json
+RUN npm run build:server
 
 # Production stage
 FROM node:20-alpine AS runner
@@ -33,6 +33,7 @@ FROM node:20-alpine AS runner
 # Build arguments for environment
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
+ENV NODE_OPTIONS="--experimental-specifier-resolution=node"
 
 WORKDIR /app
 
@@ -61,4 +62,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Start the application
-CMD ["node", "dist/server/server.js"]
+CMD ["node", "--experimental-specifier-resolution=node", "dist/server/server.js"]
