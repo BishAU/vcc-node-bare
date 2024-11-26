@@ -11,50 +11,16 @@
   ],
   "env": {
     "NODE_ENV": "staging",
-    "VITE_API_BASE_URL": "https://vcc.myinvoices.today/api",
-    "DATABASE_URL": "${DATABASE_URL}",
-    "DIRECT_URL": "${DIRECT_URL}",
-    "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}",
-    "XERO_CLIENT_ID": "${XERO_CLIENT_ID}",
-    "XERO_CLIENT_SECRET": "${XERO_CLIENT_SECRET}",
-    "ABS_API_KEY": "${ABS_API_KEY}",
-    "JWT_SECRET": "${JWT_SECRET}",
-    "COOKIE_SECRET": "${COOKIE_SECRET}",
-    "SENTRY_DSN": "${SENTRY_DSN}"
+    "PORT": "3000",
+    "HOST": "0.0.0.0"
   },
   "healthCheck": {
     "path": "/api/health",
     "port": 3000
   },
-  "networks": ["coolify"],
   "labels": [
     "traefik.enable=true",
-    "traefik.http.middlewares.gzip.compress=true",
-    "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
-    "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true",
-    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.entryPoints=http,https",
-    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.middlewares=gzip,redirect-to-https",
-    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.rule=Host(`vcc.myinvoices.today`)",
-    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.service=http-0-dogok4o8oo484440cogcckgk",
-    "traefik.http.services.http-0-dogok4o8oo484440cogcckgk.loadbalancer.server.port=3000",
-    "traefik.docker.network=coolify"
-  ],
-  "pullRequestPreview": {
-    "enable": true,
-    "hostPrefix": "pr-"
-  },
-  "deploymentStrategy": {
-    "type": "rolling",
-    "maxUnavailable": 1
-  },
-  "resources": {
-    "limits": {
-      "memory": "512Mi",
-      "cpu": "500m"
-    },
-    "requests": {
-      "memory": "256Mi",
-      "cpu": "250m"
-    }
-  }
+    "traefik.http.routers.vcc.rule=Host(`vcc.myinvoices.today`)",
+    "traefik.http.services.vcc.loadbalancer.server.port=3000"
+  ]
 }
