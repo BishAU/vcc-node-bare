@@ -54,7 +54,7 @@ RUN mkdir -p logs
 # Copy environment-specific files
 COPY .env.${NODE_ENV} .env
 
-# Expose ports
+# Expose port
 EXPOSE 3000
 
 # Health check

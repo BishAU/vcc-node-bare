@@ -2,7 +2,7 @@
   "name": "vcc-abs-staging",
   "type": "docker",
   "dockerfile": "./Dockerfile",
-  "ports": ["3000:3000", "5173:5173", "8080:8080"],
+  "ports": ["3000:3000"],
   "branch": "security-fixes",
   "isStaticBuild": false,
   "preDeployCommands": [
