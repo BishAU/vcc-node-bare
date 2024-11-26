@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -19,105 +19,89 @@ import Footer from './components/Footer';
 // Admin route component
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  
-  if (!user || user.role !== 'admin') {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <>{children}</>;
+  return user?.role === 'admin' ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 // Protected route for any authenticated user
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <>{children}</>;
+  return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
 // Dashboard layout that includes the tab navigation
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div>
       <TabNavigation />
-      <main className="py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {children}
-        </div>
-      </main>
+      {children}
     </div>
   );
 };
 
 function App() {
   return (
-    <AuthProvider>
-      <div className="flex flex-col min-h-screen">
-        <Toaster position="top-right" />
-        <Navbar />
-        <div className="flex-grow">
-          <main>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/resources" element={<Resources />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
+    <div className="flex flex-col min-h-screen">
+      <Toaster position="top-right" />
+      <Navbar />
+      <div className="flex-grow">
+        <main>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
 
-              {/* Protected dashboard routes */}
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <AdminRoute>
-                      <DashboardLayout>
-                        <Dashboard />
-                      </DashboardLayout>
-                    </AdminRoute>
-                  </PrivateRoute>
-                }
-              />
+            {/* Protected dashboard routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <AdminRoute>
+                    <DashboardLayout>
+                      <Dashboard />
+                    </DashboardLayout>
+                  </AdminRoute>
+                </PrivateRoute>
+              }
+            />
 
-              <Route
-                path="/dashboard/orders"
-                element={
-                  <PrivateRoute>
-                    <AdminRoute>
-                      <DashboardLayout>
-                        <Orders />
-                      </DashboardLayout>
-                    </AdminRoute>
-                  </PrivateRoute>
-                }
-              />
+            <Route
+              path="/dashboard/orders"
+              element={
+                <PrivateRoute>
+                  <AdminRoute>
+                    <DashboardLayout>
+                      <Orders />
+                    </DashboardLayout>
+                  </AdminRoute>
+                </PrivateRoute>
+              }
+            />
 
-              <Route
-                path="/dashboard/products"
-                element={
-                  <PrivateRoute>
-                    <AdminRoute>
-                      <DashboardLayout>
-                        <Products />
-                      </DashboardLayout>
-                    </AdminRoute>
-                  </PrivateRoute>
-                }
-              />
+            <Route
+              path="/dashboard/products"
+              element={
+                <PrivateRoute>
+                  <AdminRoute>
+                    <DashboardLayout>
+                      <Products />
+                    </DashboardLayout>
+                  </AdminRoute>
+                </PrivateRoute>
+              }
+            />
 
-              {/* Catch-all redirect */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </main>
-        </div>
-        <Footer />
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
       </div>
-    </AuthProvider>
+      <Footer />
+    </div>
   );
 }
 
