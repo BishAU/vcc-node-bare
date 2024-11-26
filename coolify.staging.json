@@ -5,7 +5,7 @@
   "port": 5173,
   "env": {
     "NODE_ENV": "staging",
-    "VITE_API_BASE_URL": "https://staging-api.vccabs.com.au/api",
+    "VITE_API_BASE_URL": "https://vcc.myinvoices.today/api",
     "DATABASE_URL": "${DATABASE_URL}",
     "DIRECT_URL": "${DIRECT_URL}",
     "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}",
@@ -35,7 +35,7 @@
     "max": 2
   },
   "domains": [
-    "staging.vccabs.com.au"
+    "vcc.myinvoices.today"
   ],
   "tags": [
     "staging",
