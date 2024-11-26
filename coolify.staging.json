@@ -30,11 +30,11 @@
     "traefik.enable=true",
     "traefik.http.middlewares.gzip.compress=true",
     "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
-    "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.entryPoints=http,https",
-    "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.middlewares=gzip",
-    "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.rule=Host(`vcc.myinvoices.today`) && PathPrefix(`/`)",
-    "traefik.http.routers.http-0-xwkosogo0sgo4c0cssoowo0o.service=http-0-xwkosogo0sgo4c0cssoowo0o",
-    "traefik.http.services.http-0-xwkosogo0sgo4c0cssoowo0o.loadbalancer.server.port=3000"
+    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.entryPoints=http,https",
+    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.middlewares=gzip,redirect-to-https",
+    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.rule=Host(`vcc.myinvoices.today`) && PathPrefix(`/`)",
+    "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.service=http-0-dogok4o8oo484440cogcckgk",
+    "traefik.http.services.http-0-dogok4o8oo484440cogcckgk.loadbalancer.server.port=3000"
   ],
   "pullRequestPreview": {
     "enable": true,
