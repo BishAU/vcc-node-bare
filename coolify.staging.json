@@ -20,13 +20,16 @@
   },
   "labels": [
     "traefik.enable=true",
+    "traefik.docker.network=coolify",
     "traefik.http.routers.vcc.rule=Host(`vcc.myinvoices.today`)",
     "traefik.http.routers.vcc.entrypoints=websecure",
     "traefik.http.routers.vcc.tls=true",
     "traefik.http.routers.vcc.tls.certresolver=letsencrypt",
     "traefik.http.services.vcc.loadbalancer.server.port=3000",
+    "traefik.http.middlewares.vcc-redirect.redirectscheme.scheme=https",
+    "traefik.http.middlewares.vcc-redirect.redirectscheme.permanent=true",
     "traefik.http.routers.vcc-http.rule=Host(`vcc.myinvoices.today`)",
     "traefik.http.routers.vcc-http.entrypoints=web",
-    "traefik.http.routers.vcc-http.middlewares=https-redirect"
+    "traefik.http.routers.vcc-http.middlewares=vcc-redirect"
   ]
 }
