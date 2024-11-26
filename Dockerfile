@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
+# Install dependencies including dev dependencies for build
 RUN NODE_ENV=development npm install
 
 # Copy source code
@@ -34,7 +34,7 @@ WORKDIR /app
 
 # Copy built assets and necessary files
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server ./server
+COPY --from=builder /app/src/server.ts ./src/server.ts
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules ./node_modules
@@ -52,7 +52,6 @@ COPY .env.${NODE_ENV} .env
 
 # Expose ports
 EXPOSE 3000
-EXPOSE 5173
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \

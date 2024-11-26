@@ -1,34 +1,16 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { PrismaClient } from '@prisma/client';
 import helmet from 'helmet';
-import mongoose from 'mongoose';
-import apiRoutes from './routes/api.js';
-
-dotenv.config();
 
 // ES modules compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Connect to MongoDB
-console.log('Connecting to MongoDB...');
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('Successfully connected to MongoDB');
-  console.log('Database name:', mongoose.connection.name);
-  console.log('Database host:', mongoose.connection.host);
-})
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  console.error('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is not set');
-  process.exit(1); // Exit if we can't connect to the database
-});
+// Initialize Prisma Client
+const prisma = new PrismaClient();
 
 const app = express();
 
@@ -53,19 +35,35 @@ app.use(helmet({
 app.use(cors());
 app.use(express.json());
 
-// API routes
-app.use('/api', apiRoutes);
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'healthy', database: 'connected' });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(500).json({ 
+      status: 'unhealthy',
+      database: 'disconnected',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
+// API routes will go here
+// TODO: Add your API routes
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../../../dist')));
+app.use(express.static(path.join(__dirname, '../dist')));
 
 // Serve index.html for all other routes (SPA support)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../dist/index.html'));
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Express error handler:', err);
   console.error('Stack trace:', err.stack);
   res.status(500).json({ 
