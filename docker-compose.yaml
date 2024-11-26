@@ -41,4 +41,5 @@ services:
       - "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.middlewares=gzip"
       - "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.rule=Host(`vcc.myinvoices.today`) && PathPrefix(`/`)"
       - "traefik.http.routers.http-0-dogok4o8oo484440cogcckgk.service=http-0-dogok4o8oo484440cogcckgk"
+      - "traefik.http.services.http-0-dogok4o8oo484440cogcckgk.loadbalancer.server.port=3000"
     restart: unless-stopped
