@@ -14,6 +14,12 @@ const prisma = new PrismaClient();
 
 const app = express();
 
+// Debug logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+  next();
+});
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: {
@@ -54,12 +60,33 @@ app.get('/api/health', async (req, res) => {
 // API routes will go here
 // TODO: Add your API routes
 
+// Debug endpoint
+app.get('/api/debug', (req, res) => {
+  res.json({
+    env: process.env.NODE_ENV,
+    dirname: __dirname,
+    staticPath: path.join(__dirname, '../dist'),
+    exists: {
+      dist: require('fs').existsSync(path.join(__dirname, '../dist')),
+      index: require('fs').existsSync(path.join(__dirname, '../dist/index.html'))
+    }
+  });
+});
+
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../dist')));
+const staticPath = path.join(__dirname, '../dist');
+console.log('Serving static files from:', staticPath);
+app.use(express.static(staticPath));
 
 // Serve index.html for all other routes (SPA support)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+  const indexPath = path.join(__dirname, '../dist/index.html');
+  console.log('Serving index.html from:', indexPath);
+  if (require('fs').existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({ error: 'index.html not found', path: indexPath });
+  }
 });
 
 // Error handling middleware
@@ -76,6 +103,9 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on 0.0.0.0:${PORT}`);
+  console.log('Environment:', process.env.NODE_ENV);
+  console.log('Current directory:', __dirname);
+  console.log('Static path:', staticPath);
 });
 
 export default app;
