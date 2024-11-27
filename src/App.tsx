@@ -14,7 +14,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import TabNavigation from './components/TabNavigation';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Footer from './components/layout/Footer';
 
 // Admin route component
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
@@ -43,7 +43,7 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <Toaster position="top-right" />
       <Navbar />
-      <div className="flex-grow">
+      <div className="flex-grow bg-white">
         <main>
           <Routes>
             {/* Public routes */}
@@ -100,7 +100,7 @@ function App() {
           </Routes>
         </main>
       </div>
-      <Footer />
+      <Footer className="mt-auto" />
     </div>
   );
 }

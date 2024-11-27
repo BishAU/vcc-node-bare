@@ -1,92 +1,133 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiBriefcase, FiBook, FiUsers } from 'react-icons/fi';
+import { 
+  FiBriefcase, 
+  FiUsers, 
+  FiTarget, 
+  FiAward,
+  FiTrendingUp,
+  FiLifeBuoy,
+  FiMapPin,
+  FiBook,
+  FiStar,
+  FiHeart
+} from 'react-icons/fi';
 
 interface ServiceCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
   delay: number;
+  imagePath: string;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, icon, delay }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, icon, delay, imagePath }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      className="bg-gray-800 p-8 rounded-lg transform transition-all duration-200 hover:shadow-xl"
+      className="bg-gray-800/50 p-8 rounded-xl transform transition-all duration-200 hover:bg-gray-800/70 relative overflow-hidden"
     >
-      <motion.div
-        whileHover={{ scale: 1.1 }}
-        className="text-purple-500 text-2xl mb-4"
-      >
-        {icon}
-      </motion.div>
-      <h3 className="text-xl font-semibold mb-4">{title}</h3>
-      <p className="text-gray-400 mb-4">{description}</p>
-      <motion.div
-        whileHover={{ x: 5 }}
-        className="text-purple-500 hover:text-purple-400 inline-flex items-center"
-      >
-        <Link to="/services">Learn More</Link>
-        <motion.span
-          className="ml-1"
-          initial={{ x: 0 }}
-          whileHover={{ x: 5 }}
+      <div className="absolute inset-0 opacity-5">
+        <img 
+          src={imagePath} 
+          alt="" 
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="relative z-10">
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          className="text-purple-400 text-3xl mb-4"
         >
-          →
-        </motion.span>
-      </motion.div>
+          {icon}
+        </motion.div>
+        <h3 className="text-xl font-semibold text-white mb-4">{title}</h3>
+        <p className="text-gray-300 mb-4">{description}</p>
+        <motion.div
+          whileHover={{ x: 5 }}
+          className="text-purple-400 hover:text-purple-300 inline-flex items-center"
+        >
+          <Link to="/services">Learn More</Link>
+          <motion.span
+            className="ml-1"
+            initial={{ x: 0 }}
+            whileHover={{ x: 5 }}
+          >
+            →
+          </motion.span>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };
 
-const ServicesSection = () => {
+export const ServicesSection: React.FC = () => {
   const services = [
     {
-      icon: <FiBriefcase />,
-      title: "Professional Career Transition",
-      description: "Expert guidance for your next professional move",
-      delay: 0.2
+      icon: <FiBriefcase className="stroke-2" />,
+      title: "Career Transition Support",
+      description: "Expert guidance and resources for seamless professional transitions in regional areas",
+      imagePath: "/images/services/career-transition.jpg"
     },
     {
-      icon: <FiBook />,
-      title: "Professional Skill Development",
-      description: "Stay current with modern workplace technologies",
-      delay: 0.4
+      icon: <FiTarget className="stroke-2" />,
+      title: "Skills Assessment & Planning",
+      description: "Comprehensive evaluation and personalized development roadmaps",
+      imagePath: "/images/services/skills-assessment.jpg"
     },
     {
-      icon: <FiUsers />,
-      title: "Professional Community Support",
-      description: "Connect with peers and mentors in your region",
-      delay: 0.6
+      icon: <FiMapPin className="stroke-2" />,
+      title: "Regional Opportunities",
+      description: "Connect with growing employment prospects in your region",
+      imagePath: "/images/services/growth.jpg"
+    },
+    {
+      icon: <FiUsers className="stroke-2" />,
+      title: "Community Network",
+      description: "Join a thriving network of professionals, mentors, and industry experts",
+      imagePath: "/images/services/community.jpg"
+    },
+    {
+      icon: <FiBook className="stroke-2" />,
+      title: "Learning & Development",
+      description: "Access curated training programs and certification pathways",
+      imagePath: "/images/services/development.jpg"
+    },
+    {
+      icon: <FiHeart className="stroke-2" />,
+      title: "Personalized Support",
+      description: "Dedicated assistance and guidance throughout your career journey",
+      imagePath: "/images/services/support.jpg"
     }
   ];
 
   return (
-    <section className="py-16">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center mb-12"
-      >
-        <h2 className="text-3xl font-bold mb-4">Our Services</h2>
-        <p className="text-gray-400 max-w-2xl mx-auto">
-          Comprehensive support for your professional journey in Regional Victoria
-        </p>
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {services.map((service, index) => (
-          <ServiceCard key={index} {...service} />
-        ))}
+    <section className="py-20 bg-gray-900">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold text-white mb-4">Our Mission & Services</h2>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            Empowering regional career transitions through comprehensive support and community collaboration
+          </p>
+        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map((service, index) => (
+            <ServiceCard
+              key={service.title}
+              {...service}
+              delay={index * 0.2}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
 };
-
-export default ServicesSection;

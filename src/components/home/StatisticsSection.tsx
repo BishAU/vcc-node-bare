@@ -5,7 +5,7 @@ import { useInView } from 'react-intersection-observer';
 import CountUp from 'react-countup';
 import ReportRegistrationModal from '../modals/ReportRegistrationModal';
 
-const StatisticsSection = () => {
+export const StatisticsSection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const controls = useAnimation();
   const [ref, inView] = useInView({
@@ -45,85 +45,130 @@ const StatisticsSection = () => {
       initial="hidden"
       animate={controls}
       variants={containerVariants}
-      className="py-16 bg-gray-800 rounded-lg p-8"
+      className="py-16 bg-gray-900 rounded-xl"
     >
-      <motion.div variants={itemVariants}>
-        <h2 className="text-3xl font-bold mb-8">Critical Insights</h2>
-        <h3 className="text-2xl mb-4">Regional Victoria's Over-50s Employment Landscape</h3>
-        <p className="text-gray-400 mb-8">
-          Our latest analysis reveals encouraging trends in regional Victoria's mature workforce employment landscape.
+      <motion.div variants={itemVariants} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-white mb-8">ABS Monthly Statistics Subscription</h2>
+        <h3 className="text-2xl text-purple-400 mb-4">Comprehensive Regional Employment Insights</h3>
+        <p className="text-gray-300 mb-8">
+          Stay ahead with detailed monthly employment statistics and expert analysis for Regional Australia.
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         <motion.div
           variants={itemVariants}
-          className="bg-gray-900 p-6 rounded-lg"
+          className="bg-gray-800/50 p-6 rounded-lg text-center"
         >
-          <div className="text-4xl font-bold text-purple-500 mb-2">
+          <div className="text-4xl font-bold text-purple-400 mb-4">
             <CountUp
-              end={7.8}
-              decimals={1}
+              end={15}
               duration={2.5}
-              suffix="%"
+              suffix="+"
               enableScrollSpy
               scrollSpyOnce
             />
           </div>
-          <div className="text-gray-400">Current Employment Rate</div>
+          <div className="text-gray-300">Regional Areas</div>
         </motion.div>
 
         <motion.div
           variants={itemVariants}
-          className="bg-gray-900 p-6 rounded-lg"
+          className="bg-gray-800/50 p-6 rounded-lg text-center"
         >
-          <div className="text-4xl font-bold text-green-500 mb-2">
+          <div className="text-4xl font-bold text-purple-400 mb-4">
             <CountUp
-              end={2.3}
-              decimals={1}
+              end={12}
               duration={2.5}
-              prefix="+"
-              suffix="%"
+              suffix=" mo"
               enableScrollSpy
               scrollSpyOnce
             />
           </div>
-          <div className="text-gray-400">YoY Increase</div>
+          <div className="text-gray-300">Historical Data</div>
+        </motion.div>
+
+        <motion.div
+          variants={itemVariants}
+          className="bg-gray-800/50 p-6 rounded-lg text-center"
+        >
+          <div className="text-4xl font-bold text-purple-400 mb-4">
+            <CountUp
+              end={20}
+              duration={2.5}
+              suffix="+"
+              enableScrollSpy
+              scrollSpyOnce
+            />
+          </div>
+          <div className="text-gray-300">Key Metrics</div>
         </motion.div>
       </div>
 
       <motion.div
         variants={itemVariants}
-        className="bg-gray-900 p-6 rounded-lg"
+        className="bg-gray-800/50 p-8 rounded-lg mb-12"
       >
-        <h4 className="font-semibold mb-4">Full Report Access</h4>
+        <h4 className="text-2xl font-semibold mb-6">CEO's Commentary - Paul Mizzi</h4>
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="md:w-1/4">
+            <div className="w-48 h-48 rounded-full overflow-hidden mx-auto mb-4">
+              <img 
+                src="/images/team/paul-mizzi.jpg" 
+                alt="Paul Mizzi"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://via.placeholder.com/200x200.png?text=PM';
+                }}
+              />
+            </div>
+            <div className="text-center">
+              <div className="font-semibold">Paul Mizzi</div>
+              <div className="text-purple-400">CEO, VirtualCC</div>
+            </div>
+          </div>
+          <div className="md:w-3/4">
+            <blockquote className="text-gray-300 text-lg leading-relaxed">
+              "Our latest employment figures reveal both challenges and opportunities in Regional Australia. While we're seeing a 2.3% YoY increase in employment rates, there's still significant untapped potential in our over-50s workforce. The shift to remote work has created unprecedented opportunities for regional communities, particularly in the digital and service sectors.
+              <br/><br/>
+              Key challenges include digital literacy gaps and infrastructure limitations, but our data shows that with targeted support and training, regional workers are excelling in remote roles. The future of regional employment lies in embracing these changes while preserving the unique advantages of regional living."
+            </blockquote>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        variants={itemVariants}
+        className="bg-gray-800/50 p-6 rounded-lg"
+      >
+        <h4 className="font-semibold mb-4">Subscription Benefits</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <ul className="text-gray-400 space-y-2">
+          <ul className="text-gray-300 space-y-3">
             <li className="flex items-center">
-              <span className="text-purple-500 mr-2">•</span>
-              Detailed regional breakdown
+              <span className="text-purple-400 mr-2">•</span>
+              Monthly employment trends by region
             </li>
             <li className="flex items-center">
-              <span className="text-purple-500 mr-2">•</span>
-              Industry-specific insights
+              <span className="text-purple-400 mr-2">•</span>
+              Industry-specific growth analysis
             </li>
             <li className="flex items-center">
-              <span className="text-purple-500 mr-2">•</span>
-              Age demographic analysis
+              <span className="text-purple-400 mr-2">•</span>
+              Age demographic breakdowns
             </li>
           </ul>
-          <ul className="text-gray-400 space-y-2">
+          <ul className="text-gray-300 space-y-3">
             <li className="flex items-center">
-              <span className="text-purple-500 mr-2">•</span>
-              Policy recommendations
+              <span className="text-purple-400 mr-2">•</span>
+              Quarterly trend forecasts
             </li>
             <li className="flex items-center">
-              <span className="text-purple-500 mr-2">•</span>
-              Quarterly trend comparisons
+              <span className="text-purple-400 mr-2">•</span>
+              Expert commentary and insights
             </li>
             <li className="flex items-center">
-              <span className="text-purple-500 mr-2">•</span>
-              Success stories
+              <span className="text-purple-400 mr-2">•</span>
+              Priority access to regional job opportunities
             </li>
           </ul>
         </div>
@@ -134,16 +179,16 @@ const StatisticsSection = () => {
         >
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-block w-full text-center px-6 py-3 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors duration-200"
+            className="inline-block w-full text-center px-6 py-3 bg-purple-400 text-white rounded-md hover:bg-purple-500 transition-colors duration-200"
           >
-            Register for Full Report
+            Subscribe to Monthly Statistics
           </button>
         </motion.div>
       </motion.div>
 
       <motion.p
         variants={itemVariants}
-        className="text-sm text-gray-500 mt-4 text-center"
+        className="text-sm text-gray-300 mt-4 text-center"
       >
         * Data sourced from official ABS statistics and internal research
       </motion.p>
@@ -155,5 +200,3 @@ const StatisticsSection = () => {
     </motion.section>
   );
 };
-
-export default StatisticsSection;

@@ -1,3 +1,28 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+.nyc_output
+
+# Production
+build
+dist
+dist-ssr
+*.local
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+.env.production
+
 # Logs
 logs
 *.log
@@ -7,52 +32,43 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Environment files
-.env
-.env.local
-.env.*.local
+# TypeScript
+*.tsbuildinfo
 
-# Build output
+# Next.js
 .next
 out
-build
 
-# Coverage directory
-coverage
+# Debug
+debug.log
+debug
 
-# Database
-*.db
-*.sqlite
+# System Files
+Thumbs.db
 
 # Temporary files
 *.tmp
-*~
+*.temp
+.cache
 
-# IDE specific files
-.vscode-test
-.vs
+# Database
+*.sqlite
+*.sqlite3
 
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
+# Prisma
+prisma/*.db
+prisma/migrations/*_init.sql
+
+# Backup files
+*.bak
+*.backup

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Navbar } from './Navbar';
+import { Footer } from './Footer';
 import { sharedStyles } from '../../styles/shared';
 
 interface PageWrapperProps {
@@ -8,11 +10,13 @@ interface PageWrapperProps {
 
 export const PageWrapper: React.FC<PageWrapperProps> = ({ children, title }) => {
   return (
-    <div className={sharedStyles.pageContainer}>
-      <div className={sharedStyles.contentWrapper}>
+    <div className={`min-h-screen bg-gray-900 ${sharedStyles.pageContainer}`}>
+      <Navbar />
+      <main className={sharedStyles.contentWrapper}>
         {title && <h1 className={sharedStyles.heading}>{title}</h1>}
         {children}
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 };
