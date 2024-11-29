@@ -1,0 +1,64 @@
+{
+  "name": "vcc-abs-production",
+  "type": "docker",
+  "dockerfile": "./Dockerfile",
+  "ports": ["3000:3000"],
+  "env": {
+    "NODE_ENV": "production",
+    "VITE_API_BASE_URL": "https://api.vccabs.com.au/api",
+    "DATABASE_URL": "${DATABASE_URL}",
+    "DIRECT_URL": "${DIRECT_URL}",
+    "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}",
+    "XERO_CLIENT_ID": "${XERO_CLIENT_ID}",
+    "XERO_CLIENT_SECRET": "${XERO_CLIENT_SECRET}",
+    "ABS_API_KEY": "${ABS_API_KEY}",
+    "JWT_SECRET": "${JWT_SECRET}",
+    "COOKIE_SECRET": "${COOKIE_SECRET}",
+    "SENTRY_DSN": "${SENTRY_DSN}",
+    "REDIS_URL": "${REDIS_URL}",
+    "CACHE_TTL": "3600",
+    "RATE_LIMIT_WINDOW": "15",
+    "RATE_LIMIT_MAX_REQUESTS": "100"
+  },
+  "healthCheck": {
+    "path": "/api/health",
+    "port": 3000,
+    "interval": 30,
+    "timeout": 10,
+    "retries": 3
+  },
+  "volumes": [
+    {
+      "source": "./logs",
+      "target": "/app/logs"
+    }
+  ],
+  "resources": {
+    "cpu": 1,
+    "memory": 2048
+  },
+  "scaling": {
+    "min": 2,
+    "max": 5,
+    "targetCPUUtilization": 70,
+    "targetMemoryUtilization": 80
+  },
+  "domains": [
+    "vccabs.com.au",
+    "www.vccabs.com.au"
+  ],
+  "tags": [
+    "production",
+    "vcc-abs"
+  ],
+  "backups": {
+    "enabled": true,
+    "schedule": "0 0 * * *",
+    "retention": 7
+  },
+  "ssl": {
+    "enabled": true,
+    "type": "letsencrypt",
+    "email": "admin@vccabs.com.au"
+  }
+}

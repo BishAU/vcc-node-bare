@@ -1,0 +1,7 @@
+Host vcc-server
+    HostName 192.168.0.144
+    User bish
+    Port 22
+    PasswordAuthentication no
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking no

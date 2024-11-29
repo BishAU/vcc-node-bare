@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-gray-100 bg-[#0f172a];
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-sm border border-brand-500/10 shadow-xl;
+  }
+  
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-accent-500;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+  }
+
+  .button-primary {
+    @apply relative bg-gradient-to-r from-brand-500 to-accent-500 hover:from-brand-600 hover:to-accent-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all duration-300 hover:-translate-y-0.5 overflow-hidden;
+  }
+
+  .button-secondary {
+    @apply px-6 py-3 rounded-xl font-semibold border border-brand-500/20 text-brand-400 hover:bg-brand-500/10 transition-all duration-300;
+  }
+
+  .badge {
+    @apply inline-block px-4 py-1 rounded-full bg-brand-500/20 text-brand-400 text-sm mb-4;
+  }
+
+  .section-title {
+    @apply text-4xl md:text-5xl font-bold text-white mb-6;
+  }
+
+  .section-subtitle {
+    @apply text-xl text-gray-400 max-w-3xl mx-auto;
+  }
+
+  .input-primary {
+    @apply w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-brand-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors;
+  }
+
+  .report-card {
+    @apply bg-slate-800/50 rounded-xl border border-brand-500/20 p-6;
+  }
+
+  /* Pagination Styles */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    gap: 5px;
+  }
+
+  .pagination li {
+    display: inline-block;
+  }
+
+  .pagination li a {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pagination li.active a {
+    background-color: #4299e1;
+    color: white;
+    border-color: #4299e1;
+  }
+
+  .pagination li a:hover:not(.active) {
+    background-color: #edf2f7;
+  }
+
+  .pagination li.disabled a {
+    color: #cbd5e0;
+    cursor: not-allowed;
+  }
+}
+
+@layer utilities {
+  .bg-grid-white\/10 {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  }
+}

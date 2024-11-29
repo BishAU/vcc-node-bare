@@ -1,0 +1,37 @@
+{
+  "name": "vcc-app",
+  "type": "docker",
+  "dockerfile": "./Dockerfile",
+  "ports": ["3000:3000"],
+  "branch": "security-fixes",
+  "isStaticBuild": false,
+  "preDeployCommands": [
+    "npx prisma generate",
+    "npx prisma migrate deploy"
+  ],
+  "env": {
+    "NODE_ENV": "staging",
+    "PORT": "3000",
+    "HOST": "0.0.0.0"
+  },
+  "healthCheck": {
+    "path": "/api/health",
+    "port": 3000
+  },
+  "labels": [
+    "traefik.enable=true",
+    "traefik.docker.network=coolify",
+    "traefik.http.services.vcc.loadbalancer.server.port=3000",
+    "traefik.http.routers.vcc.service=vcc",
+    "traefik.http.routers.vcc.rule=Host(`vcc.myinvoices.today`)",
+    "traefik.http.routers.vcc.entrypoints=websecure",
+    "traefik.http.routers.vcc.tls=true",
+    "traefik.http.routers.vcc.tls.certresolver=letsencrypt",
+    "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https",
+    "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true",
+    "traefik.http.routers.vcc-http.rule=Host(`vcc.myinvoices.today`)",
+    "traefik.http.routers.vcc-http.entrypoints=web",
+    "traefik.http.routers.vcc-http.service=vcc",
+    "traefik.http.routers.vcc-http.middlewares=https-redirect"
+  ]
+}
